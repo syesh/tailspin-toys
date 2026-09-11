@@ -14,6 +14,14 @@ This is a crowdfunding platform for games with a developer theme. The applicatio
 
 ## Code standards
 
+### Comments and API documentation
+
+- Comment why code exists, including intent, constraints, and non-obvious decisions; do not restate what the code already expresses.
+- Treat stale comments as bugs and update or remove them with the related code.
+- Add TSDoc/JSDoc to every exported function in `db/` and `src/lib/`, covering purpose, parameters, and return value, including injectable `db` parameters.
+- Reusable `.astro` components must define and maintain a documented `Props` interface in frontmatter.
+- Follow the shared standards in [`coding-standards.instructions.md`](instructions/coding-standards.instructions.md).
+
 ### Required Before Each Commit
 
 #### Testing guidelines

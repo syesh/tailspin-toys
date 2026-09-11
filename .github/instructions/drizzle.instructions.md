@@ -54,6 +54,7 @@ export async function getAllGameIds(db: Database): Promise<number[]> {
 - Always `order by` a stable column (title) so static builds are deterministic.
 - Map raw rows to the app-facing `Game`/`Publisher`/`Category` types in one place; don't leak Drizzle row shapes into components.
 - Keep ordering/lookup logic in `games.ts`, not in pages.
+- Add a TSDoc/JSDoc comment to every exported function in `db/` and `src/lib/`. Document its purpose, every parameter (including the injectable `db`), and its return value. Explain non-obvious query or transformation decisions; do not restate the implementation.
 
 ## Determinism
 
@@ -69,4 +70,4 @@ Node.js 22.13 or later is required because the data layer uses the built-in `nod
 
 ## Type checking
 
-The data layer (`db/**/*.ts`, `src/lib/*.ts`) is type-checked by `npm run typecheck`, which runs the native **TypeScript 7** compiler (`tsgo`, from `@typescript/native-preview`) against `tsconfig.tsgo.json`. Keep helpers exported with explicit parameter and return types so `tsgo` can verify them. Linting is unaffected — ESLint + `typescript-eslint` still run on the classic `typescript` package.
+The data layer (`db/**/*.ts`, `src/lib/*.ts`) is type-checked by `npm run typecheck`, which runs the native **TypeScript 7** compiler (`tsgo`, from `@typescript/native-preview`) against `tsconfig.tsgo.json`. Keep helpers exported with explicit parameter and return types so `tsgo` can verify them. ESLint enforces explicit types at exported data-layer module boundaries. Use semicolons, consistent quote style, and `import type` for type-only imports, consistent with the shared [coding standards](coding-standards.instructions.md). ESLint and `typescript-eslint` still run on the classic `typescript` package.
