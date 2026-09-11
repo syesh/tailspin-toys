@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
+import { eq } from 'drizzle-orm';
 import { createTestDatabase } from '../../db/test-helpers';
 import { categories, publishers, games } from '../../db/schema';
 import type { Database } from './db';
@@ -50,6 +51,62 @@ describe('games data-access helpers', () => {
         const ids = await getAllGameIds(db);
         const all = await getAllGames(db);
         expect(ids).toEqual(all.map((g) => g.id));
+    });
+
+    it('filters by any selected category', async () => {
+        await seedGames(db, 3);
+        const [otherCategory] = await db
+            .insert(categories)
+            .values({ name: 'Puzzle', description: 'other cat' })
+            .returning({ id: categories.id });
+        const [game] = await db
+            .select({ id: games.id })
+            .from(games)
+            .orderBy(games.id)
+            .limit(1);
+        await db
+            .update(games)
+            .set({ categoryId: otherCategory.id })
+            .where(eq(games.id, game.id));
+
+        const filtered = await getAllGames(db, {
+            categoryIds: [otherCategory.id, 99999],
+        });
+
+        expect(filtered.map((item) => item.id)).toEqual([game.id]);
+    });
+
+    it('filters by publisher and category together', async () => {
+        await seedGames(db, 3);
+        const [otherPublisher] = await db
+            .insert(publishers)
+            .values({ name: 'Pub Two', description: 'other pub' })
+            .returning({ id: publishers.id });
+        const [game] = await db
+            .select({ id: games.id })
+            .from(games)
+            .orderBy(games.id)
+            .limit(1);
+        await db
+            .update(games)
+            .set({ publisherId: otherPublisher.id })
+            .where(eq(games.id, game.id));
+
+        const category = await db
+            .select({ id: categories.id })
+            .from(categories)
+            .limit(1);
+        const filtered = await getAllGames(db, {
+            categoryIds: [category[0].id],
+            publisherId: otherPublisher.id,
+        });
+
+        expect(filtered.map((item) => item.id)).toEqual([game.id]);
+    });
+
+    it('returns no games when filters do not match', async () => {
+        await seedGames(db, 2);
+        expect(await getAllGames(db, { publisherId: 99999 })).toEqual([]);
     });
 
     it('fetches a single game by id', async () => {
