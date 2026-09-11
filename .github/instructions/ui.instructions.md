@@ -49,7 +49,7 @@ Refer to technology-specific instruction files:
 - Create reusable components for common UI patterns
 - Keep components focused on a single responsibility
 - Use props for configuration, not duplication
-- Document component APIs with TypeScript types
+- Document component APIs with a `Props` interface in frontmatter. Add TSDoc for props whose purpose or constraints are not self-evident, and keep it current with the rendered contract.
 
 ## Development Workflow
 
@@ -68,3 +68,7 @@ Refer to technology-specific instruction files:
    - Test keyboard navigation
    - Check focus states
    - Validate semantic structure
+
+5. **Review documentation**:
+   - Comments explain intent and decisions rather than restating code
+   - Reusable component props are documented and match the component API
